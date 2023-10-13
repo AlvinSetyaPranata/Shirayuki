@@ -42,7 +42,7 @@ mid_y = (inner_height // 2)
 
 
 def click(pos_x, pos_y):
-    # Click to specific coordinate
+    # Click to specific coordinate using absolute position
 
     pos_x = left + pos_x
     pos_y = top + pos_y
@@ -58,6 +58,8 @@ def click(pos_x, pos_y):
 
 
 def get_relative_pos(relX, relY):
+    # Click to speciific coordinate using relative position
+    
     pos_x = round(relX / 100 * inner_width) + left
     pos_y = round(relY / 100 * inner_height) + top
 

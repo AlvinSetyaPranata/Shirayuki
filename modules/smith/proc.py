@@ -3,11 +3,6 @@ import pyautogui as gui
 
 
 def auto_proc():
-    clickRelative(38, 34)
-
-    print("run")
-    return
-
     
     y = 25
     x = 55
