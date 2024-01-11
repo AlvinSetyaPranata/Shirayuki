@@ -64,4 +64,9 @@ def switch_character(id):
     click_relative(20, 90)
 
 
+def exit_game():
+    press("ESC")
+    click_relative(50, 83)
+    click_relative(60, 83)
+
 # controll_from_map([('W', 2), ('S', 5)])
