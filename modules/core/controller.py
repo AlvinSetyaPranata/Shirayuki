@@ -15,6 +15,7 @@ seconds
 """
 
 from pyautogui import hold as keyboard_hold, sleep
+from .base import *
 
 
 # Constans 
@@ -44,7 +45,23 @@ def controll_from_map(maps):
             sleep(coord[1])
 
 
+def switch_character(id):
+    '''
+    ID begin from 1
+    coordinate = 75 (x), 23 + 14 * id - 1
+    '''
+    # Open menu
+    press('p')
+
+    # Switch Character button
+    click_relative(80, 80)  
 
 
+    # Char character button
+    click_relative(75, 23 + 14 * (id - 1))
 
-controll_from_map([('W', 2), ('S', 5)])
+    # Switch Character
+    click_relative(20, 90)
+
+
+# controll_from_map([('W', 2), ('S', 5)])

@@ -1,5 +1,8 @@
-from modules.smith import auto_proc
+from modules.smith import refine
+from modules.core import base
 
 
-class Interface:
-    pass
+# (960x540) = 29, 90
+
+
+refine.smart_refine()

@@ -4,6 +4,7 @@ import numpy as np
 from PIL import ImageGrab as IG
 import cv2
 from time import sleep
+import random
 
 TEMPLATES = {
     "AUTO-ITEMS" : (3, 62),
@@ -46,7 +47,7 @@ def click(posX, posY):
     gui.moveTo(posX, posY)
     gui.click()
 
-def clickRelative(relX, relY):
+def clickRelative(relX, relY, mouseDuration=0):
     # Click to specific coordinate using percentage
     """
     for eg:
@@ -64,7 +65,7 @@ def clickRelative(relX, relY):
     elif posY > bottom and posY < top:
         return
 
-    gui.moveTo(posX, posY)
+    gui.moveTo(posX, posY, mouseDuration)
     gui.click()
 
 
@@ -125,3 +126,16 @@ def colorIdentification(image):
 
 def auto_proc():
     pass
+
+
+def auto_refine():
+    clickRelative(29, 90, mouseDuration=1)
+    print("Waiting to complete process...")
+    sleep(5)
+    clickRelative(45, 78, mouseDuration=1)
+
+intervals = [x/10 for x in range(5, 11)]
+
+for _ in range(200):
+    auto_refine()
+    sleep(random.choice(intervals))

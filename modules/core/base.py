@@ -16,11 +16,7 @@ import random
 
 # CONSTANS
 
-TEMPLATES = {
-    "AUTO-ITEMS" : (3, 62),
-    "BAG" : (8, 62),
-    "PRESENT" : (13, 62)
-}
+
 
 hwnd = FindWindowEx(None, None, None, "ToramOnline")
 
@@ -29,12 +25,12 @@ w = w - x
 h = h - y
 
 
-left = x +  7
-top = y + 30
-bottom = top + h - 35
-right = left + w - 15
-inner_width = right - left
-inner_height = bottom - top
+LEFT = x +  7
+TOP = y + 30
+BOTTOM = TOP + h - 35
+RIGHT = LEFT + w - 15
+inner_width = RIGHT - LEFT
+inner_height = BOTTOM - TOP
 
 mid_x = (inner_width // 2)
 mid_y = (inner_height // 2)
@@ -44,13 +40,13 @@ mid_y = (inner_height // 2)
 def click(pos_x, pos_y):
     # Click to specific coordinate using absolute position
 
-    pos_x = left + pos_x
-    pos_y = top + pos_y
+    pos_x = LEFT + pos_x
+    pos_y = TOP + pos_y
 
-    if pos_x < left and pos_x > right:
+    if pos_x < LEFT and pos_x > RIGHT:
         return
 
-    elif pos_y > bottom and pos_y < top:
+    elif pos_y > BOTTOM and pos_y < TOP:
         return
     
     gui.moveTo(pos_x, pos_y)
@@ -60,13 +56,13 @@ def click(pos_x, pos_y):
 def get_relative_pos(relX, relY):
     # Click to speciific coordinate using relative position
     
-    pos_x = round(relX / 100 * inner_width) + left
-    pos_y = round(relY / 100 * inner_height) + top
+    pos_x = round(relX / 100 * inner_width) + LEFT
+    pos_y = round(relY / 100 * inner_height) + TOP
 
-    if pos_x < left and pos_x > right:
+    if pos_x < LEFT and pos_x > RIGHT:
         return False, False
 
-    elif pos_y > bottom and pos_y < top:
+    elif pos_y > BOTTOM and pos_y < TOP:
         return False, False
 
     return pos_x, pos_y
@@ -93,36 +89,17 @@ def click_relative(relX, relY):
     gui.click()
 
 
-def grab_image(img_src):
-    image = np.array(IG.grab(bbox=(left, top, right, bottom)))
-    
-
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    temp_ = cv2.imread(img_src, 0).copy()
-
-    
-    res =  cv2.matchTemplate(image, temp_, cv2.TM_CCOEFF_NORMED)
-
-    threshold = 0.8
-    coord = np.where(res >= threshold)
-
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
-
-    temp_height, temp_width = temp_.shape
-
-    loc = (max_loc[0] + (temp_width // 2), max_loc[1] + (temp_height // 2))
-
-    click(*loc)
-    
 
 def get_interval(custom_time=(0.8, 0.9, 1)):
     return random.choice(custom_time)
 
 
+def get_pos_by_dim():
+    click_relative(29, 90)
+    print("Waiting to complete process...")
+    sleep(5)
+    click_relative(45, 78)
 
 
-
-    
-
-
+def press(key):
+    gui.press(key)
