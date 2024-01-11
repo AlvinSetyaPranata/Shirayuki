@@ -2,6 +2,11 @@ import cv2
 import numpy as np
 from PIL import ImageGrab as IG
 from .base import get_relative_pos
+from PIL import Image
+import pytesseract
+
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 def detect_color(image):
 
@@ -49,15 +54,14 @@ def grab_image_in(left, top, right, bottom):
     return image
 
 
-def grab_image(img_src):
-    image = np.array(IG.grab(bbox=(LEFT, TOP, RIGHT, BOTTOM)))
-    
+def find_image(image_path):
+    image_data = grab_image_in(0, 0, 100, 100)
 
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    temp_ = cv2.imread(img_src, 0).copy()
+    image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2GRAY)
+    temp_ = cv2.imread(image_path, 0).copy()
 
     
-    res =  cv2.matchTemplate(image, temp_, cv2.TM_CCOEFF_NORMED)
+    res =  cv2.matchTemplate(image_data, temp_, cv2.TM_CCOEFF_NORMED)
 
     threshold = 0.8
     coord = np.where(res >= threshold)
@@ -69,5 +73,17 @@ def grab_image(img_src):
 
     loc = (max_loc[0] + (temp_width // 2), max_loc[1] + (temp_height // 2))
 
-    click(*loc)
-    
+    return loc    
+
+
+def find_text(left, top, right, bottom, development=False):
+    image_data = grab_image_in(left, top, right, bottom)
+
+    text = pytesseract.image_to_string(image_data)
+
+    if development:
+        cv2.imshow('Results', image_data)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    return text
