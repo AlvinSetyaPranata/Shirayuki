@@ -8,7 +8,7 @@ import pytesseract
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
-def detect_color(image):
+def detect_red(image):
 
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -25,7 +25,8 @@ def detect_color(image):
     color_mask = cv2.bitwise_or(mask1, mask2)
 
 
-    result = cv2.bitwise_and(image, image, mask=color_mask)
+
+    # result = cv2.bitwise_and(image, image, mask=color_mask)
 
     # cv2.imshow('Original Image', cv2.imread(image_path))
 
@@ -43,13 +44,26 @@ def detect_color(image):
     return np.any(color_mask)
 
 
-def grab_image_in(left, top, right, bottom):
+def detect_blue(image):
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    lower_blue = np.array([100, 50, 50])
+    upper_blue = np.array([130, 255, 255])
+
+    blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+
+    return np.any(blue_mask)
+
+
+
+def grab_image_in(left, top, right, bottom, development=False):
     image = np.array(IG.grab(bbox=(*get_relative_pos(left, top), *get_relative_pos(right, bottom),)))
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    # cv2.imshow('Results', image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    if development:
+        cv2.imshow('Results', image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     return image
 

@@ -103,3 +103,9 @@ def get_pos_by_dim():
 
 def press(key):
     gui.press(key)
+
+
+def write(text, press_enter=True):
+    gui.write(text, interval=0.1)
+    sleep(1)
+    press("ENTER")
