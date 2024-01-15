@@ -44,13 +44,11 @@ def auto_proc():
 
 
 def change_mats_catagory_filter_btn(expected):
+    sleep(0.5)
     current_catagory = find_text(3, 41, 13, 49).strip().lower()
     expected = expected.lower()
 
-    # Fix
-
     while current_catagory != expected:
-        print(current_catagory, expected)
         click_relative(7, 35)
         sleep(1)
         current_catagory = find_text(3, 41, 13, 49).strip().lower()
@@ -73,6 +71,7 @@ def check_catagory_btn():
 
 
 def smart_proc(mat_name, mat_catagory):
+    # match_image(("bag", "empty-slot.PNG"),x-7, y-7, x+3, y+7)
     print("Going to proc menu....")
     goto_ex_skill()
 
@@ -99,14 +98,12 @@ def smart_proc(mat_name, mat_catagory):
             current_column = 1
 
         click_relative(x, y)
-        sleep(1)
+        sleep(0.8)
 
         selected_mats_name = find_text(3, 60, 40, 66).strip().lower()
 
         if not selected_mats_name:
             break
-
-        print(selected_mats_name, mat_name)
 
         if selected_mats_name != mat_name:
             x += 10
@@ -116,7 +113,8 @@ def smart_proc(mat_name, mat_catagory):
         selected_mats_qty = find_text(30, 60, 45, 66, detect_number_only=True)
 
         # Check whenever the current pointer is not indicating an empty slot
-        match_image(("bag", "empty-slot.PNG"),x-6, y-6, x+3, y+6)
+        if match_image(("bag", "empty-slot.PNG"),x-7, y-7, x+3, y+7):
+            break
 
         if not selected_mats_qty or int(selected_mats_qty) <= 1:
             print("Skipping quantity of current stack is 1")

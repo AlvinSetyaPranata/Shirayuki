@@ -111,15 +111,15 @@ def find_text(left, top, right, bottom, development=False, detect_number_only=Fa
 
 def match_image(image_path, left, top, right, bottom):
 
-    # filename = Path("assets", *image_path).resolve()
-    # print(isfile(filename))
+    filename = Path("assets", *image_path).resolve()
 
     sift = cv2.SIFT_create()
     target = cv2.cvtColor(grab_image_in(left, top, right, bottom), cv2.COLOR_RGB2GRAY)
-    template = cv2.imread(r"assets\\bag\\empty-slot.PNG", 0)
+    template = cv2.imread(fr'{filename}', 0)
 
-    kp1, des1 = sift.detectAndCompute(template, None)
-    kp2, des2 = sift.detectAndCompute(target, None)
+    # Find keypoints and descriptors with SIFT
+    kp1, des1 = sift.detectAndCompute(target, None)
+    kp2, des2 = sift.detectAndCompute(template, None)
 
     # FLANN parameters
     FLANN_INDEX_KDTREE = 1
@@ -127,21 +127,19 @@ def match_image(image_path, left, top, right, bottom):
     search_params = dict(checks=50)
 
     # FLANN-based matcher
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    flann = cv2.FlannBasedMatcher(index_params,search_params)
     matches = flann.knnMatch(des1, des2, k=2)
 
-    # Apply ratio test
-    good_matches = []
-    for m, n in matches:
+    # Need to draw only good matches, so create a mask
+    matchesMask = [[0,0] for _ in range(len(matches))]
+
+    # ratio test as per Lowe's paper
+    for i,(m,n) in enumerate(matches):
         if m.distance < 0.7 * n.distance:
-            good_matches.append(m)
+            matchesMask[i]=[1,0]
 
-    # Draw matches on the image
-    img_matches = cv2.drawMatches(template, kp1, target, kp2, good_matches, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+    if len(matchesMask) == 2:
+        return True
 
-    # Display the result
-    cv2.imshow('Matches', img_matches)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
+    return False
     
