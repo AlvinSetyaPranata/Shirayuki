@@ -1,5 +1,7 @@
 from modules.core.base import *
 from modules.core.graphic import *
+from modules.core.controller import *
+from time import sleep
 
 
 def auto_proc():
@@ -70,6 +72,80 @@ def check_catagory_btn():
 
 
 
-def smart_proc():
-    check_catagory_btn()
+def smart_proc(mat_name, mat_catagory):
+    print("Going to proc menu....")
+    goto_ex_skill()
 
+
+    print("Checking the bottom 3 catagory button...")
+    check_catagory_btn()
+    print("Checking item filter type...")
+    change_mats_catagory_filter_btn(mat_catagory)
+
+    x = 55
+    y = 25
+    current_column = 0
+    start = False
+
+    if not mat_name and mat_catagory:
+        return
+
+    print(f"Begining to proc with material name {mat_name} that is type of {mat_catagory} material")
+    
+    while True:
+        if current_column == 5:
+            y += 18
+            x = 55
+            current_column = 1
+
+        click_relative(x, y)
+        sleep(1)
+
+        selected_mats_name = find_text(3, 60, 40, 66).strip().lower()
+
+        if not selected_mats_name:
+            break
+
+        print(selected_mats_name, mat_name)
+
+        if selected_mats_name != mat_name:
+            x += 10
+            current_column += 1
+            continue
+
+        selected_mats_qty = find_text(30, 60, 45, 66, detect_number_only=True)
+
+        # Check whenever the current pointer is not indicating an empty slot
+        match_image(("bag", "empty-slot.PNG"),x-6, y-6, x+3, y+6)
+
+        if not selected_mats_qty or int(selected_mats_qty) <= 1:
+            print("Skipping quantity of current stack is 1")
+            x += 10
+            current_column += 1
+            continue
+
+        if not start:
+            start = True
+
+        if selected_mats_name != mat_name and start:
+            break
+
+        # Click process button
+        click_relative(24, 35) 
+
+        # Set to maximum total
+        click_relative(87, 38)
+
+        # Decrease by one
+        click_relative(17, 38)
+
+        # Proc now
+        click_relative(50, 85)
+
+        # Finihing proc
+        click_relative(50, 80)
+
+        x += 10
+        current_column += 1
+
+    print("Finished")

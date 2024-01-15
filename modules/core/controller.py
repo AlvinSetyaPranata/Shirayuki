@@ -69,4 +69,11 @@ def exit_game():
     click_relative(50, 83)
     click_relative(60, 83)
 
-# controll_from_map([('W', 2), ('S', 5)])
+
+
+def goto_ex_skill():
+    press("p")
+    click_relative(75,  38)
+    click_relative(75, 25)
+    click_relative(20, 25)
+    click_relative(50, 55)

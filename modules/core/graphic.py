@@ -4,13 +4,15 @@ from PIL import ImageGrab as IG
 from .base import get_relative_pos
 from PIL import Image
 import pytesseract
+from pathlib import Path
+from os.path import isfile
 
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 def detect_red(image):
 
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
     lower_red = np.array([0, 100, 100])
     upper_red = np.array([10, 255, 255])
@@ -45,12 +47,13 @@ def detect_red(image):
 
 
 def detect_blue(image):
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
     lower_blue = np.array([100, 50, 50])
     upper_blue = np.array([130, 255, 255])
 
     blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+
 
     return np.any(blue_mask)
 
@@ -58,8 +61,7 @@ def detect_blue(image):
 
 def grab_image_in(left, top, right, bottom, development=False):
     image = np.array(IG.grab(bbox=(*get_relative_pos(left, top), *get_relative_pos(right, bottom),)))
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
+    
     if development:
         cv2.imshow('Results', image)
         cv2.waitKey(0)
@@ -90,10 +92,15 @@ def find_image(image_path):
     return loc    
 
 
-def find_text(left, top, right, bottom, development=False):
+def find_text(left, top, right, bottom, development=False, detect_number_only=False):
     image_data = grab_image_in(left, top, right, bottom)
+    options = ""
 
-    text = pytesseract.image_to_string(image_data)
+
+    if detect_number_only:
+        options = r'--oem 3 --psm 6 outputbase digits'
+
+    text = pytesseract.image_to_string(image_data, config=options)
 
     if development:
         cv2.imshow('Results', image_data)
@@ -101,3 +108,40 @@ def find_text(left, top, right, bottom, development=False):
         cv2.destroyAllWindows()
 
     return text
+
+def match_image(image_path, left, top, right, bottom):
+
+    # filename = Path("assets", *image_path).resolve()
+    # print(isfile(filename))
+
+    sift = cv2.SIFT_create()
+    target = cv2.cvtColor(grab_image_in(left, top, right, bottom), cv2.COLOR_RGB2GRAY)
+    template = cv2.imread(r"assets\\bag\\empty-slot.PNG", 0)
+
+    kp1, des1 = sift.detectAndCompute(template, None)
+    kp2, des2 = sift.detectAndCompute(target, None)
+
+    # FLANN parameters
+    FLANN_INDEX_KDTREE = 1
+    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+    search_params = dict(checks=50)
+
+    # FLANN-based matcher
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    matches = flann.knnMatch(des1, des2, k=2)
+
+    # Apply ratio test
+    good_matches = []
+    for m, n in matches:
+        if m.distance < 0.7 * n.distance:
+            good_matches.append(m)
+
+    # Draw matches on the image
+    img_matches = cv2.drawMatches(template, kp1, target, kp2, good_matches, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+
+    # Display the result
+    cv2.imshow('Matches', img_matches)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    

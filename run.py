@@ -8,4 +8,4 @@ from modules.smith import proc
 
 
 # refine.smart_refine(5, pcs=83)
-proc.change_mats_catagory_filter_btn("medicine")
+proc.smart_proc("burglar’s cloth", "cloth")
