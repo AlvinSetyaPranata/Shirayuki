@@ -71,7 +71,13 @@ def check_catagory_btn():
 
 
 def smart_proc(mat_name, mat_catagory):
-    # match_image(("bag", "empty-slot.PNG"),x-7, y-7, x+3, y+7)
+    """"
+    How does it work?, well it detect the material that specified and it will
+    read how many mats in one slot, if the ammount of material is 1 will be skipped,
+    if not then it will proc with (total_mats - 1), that makes easier to farm without being
+    overrided by another material
+    """
+
     print("Going to proc menu....")
     goto_ex_skill()
 

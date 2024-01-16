@@ -7,6 +7,10 @@ import pytesseract
 from pathlib import Path
 from os.path import isfile
 
+"""
+Support OCR for detecting text and numbers
+"""
+
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
